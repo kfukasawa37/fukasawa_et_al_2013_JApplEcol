@@ -4,7 +4,9 @@
 #nyear=32 (=2010-1979+1)
 #estart=23 (=2001-1979+1)
 load("fukasawaetal2013.Rdata")
-library(R2OpenBUGS)
+if (!require("R2OpenBUGS")) {
+  install.packages("R2OpenBUGS")
+}
 
 mongoose.model<-function(){
 	tau.ni <- 0.01	#precision of vague priors
@@ -38,9 +40,7 @@ mongoose.model<-function(){
 model.file<-"c:/bugstemp/mongoosemodel.txt"	#file path of temporary file which is sent to OpenBUGS
 write.model(mongoose.model,model.file)
 
-data<-list("C","E",
-			"nyear","estart"
-			)
+data<-list("C","E","nyear","estart")
 
 sinit<-C*3+(1:nyear)^0.2*30
 sinit[1]<-NA
