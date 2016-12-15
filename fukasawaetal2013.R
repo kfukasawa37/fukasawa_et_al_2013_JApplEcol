@@ -60,3 +60,4 @@ mongoose.res.bugs<-bugs(data,inits,parameters,model.file,
     n.chains=3, n.iter=2000,n.burnin=1000,n.thin=10000,DIC=F,
     ,working.directory="c:/bugstemp/",debug=T)
 
+save.image("fukasawaetal2013_result.Rdata")
