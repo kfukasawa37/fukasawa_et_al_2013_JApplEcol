@@ -1,9 +1,25 @@
-###Contents of "fukasawaetal2013.Rdata"
-#C:Number of captures (1979-2010)
-#E:Capture effort (100 Trap-days, 2001-2010(NAs are assigned to 1979-2000))
-#nyear=32 (=2010-1979+1)
-#estart=23 (=2001-1979+1)
-load("fukasawaetal2013.Rdata")
+###Real parameters
+r<-1.5
+c<-(-5)
+beta<-0.5
+sigma.c<-sqrt(0.05)
+nyear<-10
+E<-1:nyear*1000
+ninit<-5000
+
+n<-s<-C<-rep(NA,nyear)
+pc<-1-exp(-exp(rnorm(nyear,c,sigma.c))*E^beta)
+n[1]<-ninit
+for(i in 1:ny){
+	s[i]<-rpois(1,n[i]*r)
+	C[i]<-rbinom(1,s[i],pc[i])
+	if(i!=ny){
+		n[i+1]<-s[i]-C[i]
+	}
+}	
+
+
+#Estimation
 if (!require("R2OpenBUGS")) {
   install.packages("R2OpenBUGS")
 }
@@ -11,7 +27,7 @@ if (!require("R2OpenBUGS")) {
 mongoose.model<-function(){
 	tau.ni <- 0.01	#precision of vague priors
 	#Observation model (2001 to 2010)
-	for (i in estart:nyear) {
+	for (i in 1:nyear) {
 		#Likelihood
 		C[i] ~ dbin(pc[i], s[i])
 		#Weibull catchability model(cloglog transformed)
@@ -26,6 +42,8 @@ mongoose.model<-function(){
 	for (i in 1:nyear) {
 		mu.s[i] <- n[i] * r
 		s[i] ~ dpois(mu.s[i])
+	}
+	for(i in 1:(nyear-1){
 		n[i+1] <- s[i] - C[i]
 	}
 	#Priors
